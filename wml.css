@@ -1,0 +1,7 @@
+anchor { color: #00E; text-decoration: underline; cursor: pointer; }
+anchor:active { color: red;}
+do {color:#00D; padding: 1px; margin: 1px; border: 1px black solid; text-decoration: underline; cursor: pointer;}
+card p {background-color: transparent;}
+wml card b.wml_title { display: block; padding: 10px; text-align: center; background-color: #EEE; }
+wml { font-family: Helvetica, Arial; font-size: 15pt; }
+card { display: block; padding: 10px; margin: 10px; }
