@@ -1,17 +1,24 @@
+// comment: 删除字符左右的空格。
 String.prototype.trim = function() {
     return this.replace(/^\s*/, "").replace(/\s*$/, "")
 };
+// comment: 获取元素的属性。通过正则表达式查询，感觉效率低。不如直接获取, 而且以后我们应该不用它
+// 参数c是属性名字， 参数a是属性的取值范围， 参数e是默认值（没取到时使用）
 Element.prototype.getParam = function(c, a, e) {
     a = typeof a !== "undefined" ? a: '([^"]*)';
     e = typeof e !== "undefined" ? e: "";
+    // comment: 查找 c=a的字符串
     var d = new RegExp(c + '="' + a + '"', "i");
+    // comment: 将匹配的c=a的字符中剔除c=，只留下a，这样就得到参数了
     var b = new RegExp("(" + c + '="|")', "gi");
+    // comment: 这里表示可以穿透到子元素？比如go元素没有直接包含在card元素里面？
     var f = this.outerHTML.match(d);
     if (f == null) {
         f = e
     } else {
         f = f[0].replace(b, "")
     }
+    // comment: 还存起来?
     this[c] = f;
     return f
 };
@@ -35,6 +42,8 @@ Element.prototype.getFirstChild = function() {
     return a
 };
 url = "about:blank";
+
+// comment:入口函数
 var wml = function() {
     var e = {};
     var j = {};
@@ -99,10 +108,15 @@ var wml = function() {
         var q = escape(r) + ((p == null) ? "": "; expires=" + s.toUTCString());
         document.cookie = o + "=" + q
     }
+    
+    // comment:初始化函数
     var d = function() {
+
+        // 对card标签的初始化
         var p = document.getElementsByTagName("card");
         var D = true;
         for (z = 0; z < p.length; z++) {
+            // 对card的title属性的处理：把title属性放到innerHTML里面显示
             if (p[z].title) {
                 p[z].innerHTML = '<b class="wml_title">' + p[z].title + "</b>" + p[z].innerHTML;
                 p[z].title = ""
@@ -230,6 +244,8 @@ var wml = function() {
             }
         }
     };
+
+    //comment: 这里是进行一系列初始化入口
     if (document.doctype && document.doctype.name && document.doctype.name.toLowerCase() == "wml") {
         d()
     }
@@ -302,6 +318,8 @@ var wml = function() {
         document.getElementById("dynform").submit();
         return false
     }
+
+    // comment:执行card标签切换的函数
     var c = function(p) {
         var o;
         if (typeof p == "undefined") {
@@ -316,6 +334,7 @@ var wml = function() {
         if (o.id == "#") {
             s = document.getElementsByTagName("card")[0]
         }
+        // comment: 跳转到的card才会显示为block，其它的card都会隐藏(none)
         if (s) {
             j = s;
             var r = document.getElementsByTagName("card");
@@ -325,6 +344,10 @@ var wml = function() {
             s.style.display = "block"
         }
     };
+    
+    // comment: 从url里面提取锚点和参数
+    // 这里假定url的格式是:http://xxxx#anchor?p1=v1&p2=v2
+    // 提取后的json格式：{ id:anchor; vars: { p1:v1, p2:v2 } }
     function b(o) {
         var p = o.substring(o.indexOf("#"));
         var q = -1;
@@ -347,8 +370,11 @@ var wml = function() {
         r.id = p;
         return r
     }
+    // comment: 监听background.js传递过来的url改变的消息，执行各个card的可见性质的切换
+    // 这种方式感觉不好。采用js监听DOMContentLoaded和hashchange事件会更好。
     chrome.extension.onMessage.addListener(function(q, p, o) {
         if (q.url.indexOf("#") != -1) {
+            //comment: 注意：这是赋值符号，每次url会在这里变化。url的初始值为：about:blank
             var r = c(url = q.url)
         } else {
             c()

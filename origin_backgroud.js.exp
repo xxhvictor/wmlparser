@@ -7,6 +7,7 @@ chrome.wml = {
             var h = f.responseHeaders,
             e = false,
             g = false;
+            // comment: 替换text/vnd.wap.wml 为text/html
             h.forEach(function(i) {
                 if (i && i.name.toLowerCase() == "content-type" && i.value.toLowerCase().substring(0, 16) == "text/vnd.wap.wml") {
                     i.value = "text/html";
@@ -15,6 +16,7 @@ chrome.wml = {
             });
             if (g) {
                 h.forEach(function(i) {
+                    // comment: 防止文件被当成下载
                     if (i.name.toLowerCase() == "content-disposition") {
                         i.value = "inline"
                     }
@@ -42,6 +44,7 @@ chrome.wml = {
     if (chrome.tabs) {
         var b = function(e, d, f) {
             if (d.url) {
+                //comment: url更新后，发消息给contents script, contents script可以进行card间的切换
                 chrome.tabs.sendMessage(e, {
                     url: d.url
                 },
