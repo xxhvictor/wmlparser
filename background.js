@@ -1,32 +1,36 @@
-(function() {
-    var c = chrome.webRequest != undefined ? chrome.webRequest.onHeadersReceived: null,
-    a = function() {
-        var d = function(f) {
-            var h = f.responseHeaders,
-            g = false;
-            h.forEach(function(i) {
-                if (i && i.name.toLowerCase() == "content-type" && i.value.toLowerCase().substring(0, 16) == "text/vnd.wap.wml") {
-                    i.value = "text/html";
-                    g = true
+//define function
+function changeMIME() {
+    var listener  = function(details) {
+        var headers = details.responseHeaders;
+        var hasChangeMime = false;
+
+        //do replace "text/vnd.wap.wml" with "text/html"
+        headers.forEach(function(head) {
+            if (head && head.name.toLowerCase() == "content-type" && head.value.toLowerCase().substring(0, 16) == "text/vnd.wap.wml") {
+                head.value = "text/html";
+                hasChangeMime = true
+            }
+        });
+
+        //prevent the wml source being downloaded
+        if (hasChangeMime) {
+            headers.forEach(function(head) {
+                if (head.name.toLowerCase() == "content-disposition") {
+                    head.value = "inline"
                 }
             });
-            if (g) {
-                h.forEach(function(i) {
-                    if (i.name.toLowerCase() == "content-disposition") {
-                        i.value = "inline"
-                    }
-                })
-            }
-            return {
-                responseHeaders: h
-            }
-        };
-        return d
+        }
+        return { responseHeaders: headers };
     };
+
+    var c = chrome.webRequest != undefined ? chrome.webRequest.onHeadersReceived: null;
     if (c != null) {
-        c.addListener(a(), {
+        c.addListener(listener, {
             urls: ["http://*/*", "https://*/*"]
         },
         ["blocking", "responseHeaders"])
     }
-    } ());
+};
+
+//start change
+changeMIME();
