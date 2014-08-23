@@ -45,7 +45,9 @@ url = "about:blank";
 
 // comment:入口函数
 var wml = function() {
+    // e 是当前的所有变量的集合:
     var e = {};
+    // j 是当前显示的card
     var j = {};
     function g(y) {
         var t = y.replace(/(\$|\(|\))/g, "");
@@ -78,12 +80,18 @@ var wml = function() {
         }
         return null
     }
+
+    // comment:将{o:q}存储到e，同时存储到cookie里面
     function a(o, q) {
         e[o] = q;
+        // comment:把wml_vars从cookie里面取出来,增加 {o:q}后，再存到cookie里面
         var p = JSON.parse(k("wml_vars") || "{}");
         p[o] = q;
         m("wml_vars", JSON.stringify(p), 1)
     }
+
+    // comment: 从document.cookie里面去key值为p的value，同时用unescape解码。
+    // 没找到就返回null
     function k(p) {
         var q = document.cookie;
         var r = q.indexOf(" " + p + "=");
@@ -102,6 +110,7 @@ var wml = function() {
         }
         return q
     }
+    // comment: 将字符串r以key值o存储到cookie，同时设置超时时间为当前时间+p
     function m(o, r, p) {
         var s = new Date();
         s.setDate(s.getDate() + p);
@@ -122,12 +131,16 @@ var wml = function() {
                 p[z].title = ""
             }
             if (window.timer = p[z].getParam("ontimer")) {
+                // comment: wml的timer是1/10秒, 而且每个card只能有一个有效的timer标签
+                // comment: 这个太草率了吧，直接就启动定时器了。定时器应该在显示的card里面启动，而且在card显示时才触发，隐藏时删除
                 var F = p[z].getElementsByTagName("timer")[0].getValue() * 100;
                 setTimeout(function() {
                     location.href = timer
                 },
                 F)
             }
+            
+            // comment: 这里的意思是显示第一个card，其它的隐藏。代码写得有漏洞。如果直接通过带锚点的url进来，可能显示的就不是第一个了。
             if (D) {
                 D = false;
                 j = p[z]
@@ -135,6 +148,9 @@ var wml = function() {
                 p[z].style.display = "none"
             }
         }
+
+        //comment: 下面两个处理是收集页面里面所有的变量。虽然这样简单，貌似不对吧。只有进入某个card才收集该card里面的变量？
+        // select 元素里面的变量呢？
         var s = document.getElementsByTagName("refresh");
         for (z = 0; z < s.length; z++) {
             var E = s[z].getElementsByTagName("setvar");
@@ -145,13 +161,17 @@ var wml = function() {
         var A = document.getElementsByTagName("input");
         for (z = 0; z < A.length; z++) {
             var q;
+            //comment:value属性可以直接忽略。直接获取input元素的value属性
             if (!A[z].getValue() && (q = g(A[z].getParam("name")))) {
                 A[z].value = q
             }
+            // comment: 把键盘输出的字符放到name属性里面, 应该不需要处理了吧
             A[z].onkeyup = function() {
                 a(this.getParam("name"), this.value)
             }
         }
+
+        // comment: anchor标签的处理
         var o = document.getElementsByTagName("anchor");
         var C = null;
         for (z = 0; z < o.length; z++) {
