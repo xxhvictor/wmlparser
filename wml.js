@@ -35,7 +35,7 @@ Element.prototype.getFirstChild = function() {
     return a
 };
 url = "about:blank";
-var wml = function() {
+var wmlMain = function() {
     var e = {};
     var j = {};
     function g(y) {
@@ -359,4 +359,4 @@ var wml = function() {
         }
     })
 };
-document.addEventListener("DOMContentLoaded", wml, false);
+document.addEventListener("DOMContentLoaded", wmlMain, false);
